@@ -43,5 +43,26 @@ Create a new instance of Pocket.js.
 var store = Pocket.new();
 ```
 
+## Comparators
+
+Whenever you manipulate data in a pocket, you are able to pass a query so that only items which match the query are affected.
+
+When:
+* Finding one: `collection.findOne(query)`
+* Finding: `collection.find(query)`
+* Updating: `collection.update(query, data)`
+* Removing: `collection.remove(query)`
+
+### Table of operations
+| Operation         | Syntax                            | Description                                           |
+| :---------------- | :-------------------------------- | :---------------------------------------------------- |
+| Equal             | `age:18` or `age:{ $eq: 18 }`     | True if the key equals a value                        |
+| Not equal         | `age:{ $neq: 18 }`                | True if key is not equal to a value                   |
+| Or                | `$or:[{ age: 18 },{ age: 19 }]`   | True is any of the conditions match                   |
+| Greater           | `age:{ $gt: 18 }`                 | True if the key is greater than a value               |
+| Greater or equal  | `age:{ $gte: 18 }`                | True if the key is greater than or equal to a value   |
+| Less              | `age:{ $lt: 18 }`                 | True if the key is less than a value                  |
+| Less or equal     | `age:{ $lte: 18 }`                | True if the key is less than or equal to a value      |
+
 ## License
 This software is provided free of charge and without restriction under the [MIT License](LICENSE)
