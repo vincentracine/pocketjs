@@ -1,12 +1,12 @@
 # PocketJS
-Pocket.js is a wrapper for the window.localStorage. It provides helpful methods which utilise MongoDB's proven syntax and provides a powerful lightweight abstraction from the complexity of managing and querying local storage.
+Pocket is a wrapper for the window.localStorage. It provides helpful methods which utilise MongoDB's proven syntax and provides a powerful lightweight abstraction from the complexity of managing and querying local storage.
 
 ```js
 // Create a new Pocket
-var store = Pocket.new()
+var pocket = Pocket.new()
 
 // Add a collection
-var staffs = store.collection('staff')
+var staffs = pocket.collection('staff')
 
 // Add a item to the collection
 staffs.insert({ name:'Foo Bar', age:18 })
@@ -29,6 +29,13 @@ staffs.remove({ name:'Foo Bar' });
 
 // Update item
 staffs.update({ name:'Foo Bar' }, { age:19 });
+
+
+// Commit collection to localStorage
+staffs.commit()
+
+// Commit entire pocket to localStorage
+pocket.commit()
 ```
 
 ## Installation
@@ -38,10 +45,19 @@ In your `index.html` file, include the Pocket.js file.
 <script type="text/javascript" src="path/to/Pocket.js"></script>
 ```
 
-Create a new instance of Pocket.js.
+Create a new pocket.
 ```js
-var store = Pocket.new();
+var pocket = Pocket.new();
 ```
+
+## How it works
+Pocket is a wrapper for the window.localStorage object and exposes a simple API to make your life easier. Pocket works 
+on two layers. The first layer is a in-memory representation of your data which allows rapid querying and data manipulation. 
+The second layer is localStorage and is persistent. The first layer, by default, automatically commits changes to localStorage 
+in JSON format. You can disable this behaviour at anytime on any collection and only commit data to localStorage when it suits you. 
+
+To commit a collection:
+`collection.commit()` or `pocket.commit('collectionName')`
 
 ## Comparators
 
