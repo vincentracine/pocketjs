@@ -1,0 +1,30 @@
+{
+  "name": "pocketjs",
+  "version": "1.0.1",
+  "description": "localStorage wrapper which exposes a simple MongoDB-like syntax ",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vincentracine/pocketjs.git"
+  },
+  "keywords": [
+    "localStorage",
+    "javascript",
+    "browser",
+    "offline",
+    "storage",
+    "mongo"
+  ],
+  "author": "Vincent Racine",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vincentracine/pocketjs/issues"
+  },
+  "homepage": "https://github.com/vincentracine/pocketjs#readme"
+}
