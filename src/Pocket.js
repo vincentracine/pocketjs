@@ -22,7 +22,7 @@ window.Pocket = (function(pocket){
 		 * Pocket version
 		 * @type {string}
 		 */
-		version = '1.0.0';
+		version = '1.0.4';
 
 	/**
 	 * Checks a value if of type array
