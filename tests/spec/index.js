@@ -174,6 +174,11 @@ describe('app', function() {
 				expect(collection.findOne({ age: { $lte:11 } })).not.toBeTruthy();
 			});
 
+			it('nested comparators in $or', function(){
+				expect(collection.find({ $or: [{ name:{ $eq:'Person 1' }},{ name:{ $eq:'Person 2' }}] }).length).toEqual(2);
+				expect(collection.find({ $or: [{ age:{ $gt:30 }},{ age:{ $lte:15 }}] }).length).toEqual(4);
+			});
+
 		});
 
 

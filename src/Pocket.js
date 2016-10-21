@@ -208,6 +208,19 @@ window.Pocket = (function(pocket){
 		 */
 		'$lte': function(a,b){
 			return a <= b;
+		},
+
+		/**
+		 * Contains test for strings
+		 *
+		 * @example
+		 * Examples.find({ name: { $contains: "foo" } });
+		 *
+		 * @param a
+		 * @param b
+		 */
+		'$contains': function(a,b){
+			return a.indexOf(b) > -1;
 		}
 	};
 

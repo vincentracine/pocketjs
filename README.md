@@ -25,17 +25,19 @@ staffs.findOne({ name:'Foo Bar' }).age //18
 staffs.remove()
 
 // Remove item
-staffs.remove({ name:'Foo Bar' });
+staffs.remove({ name:'Foo Bar' })
 
 // Update item
-staffs.update({ name:'Foo Bar' }, { age:19 });
-
+staffs.update({ name:'Foo Bar' }, { age:19 })
 
 // Commit collection to localStorage
 staffs.commit()
 
 // Commit entire pocket to localStorage
 pocket.commit()
+
+// Restore localStorage
+pocket.restoreStore()
 ```
 
 ## Installation
@@ -48,6 +50,9 @@ In your `index.html` file, include the Pocket.js file.
 Create a new pocket.
 ```js
 var pocket = Pocket.new();
+
+// Restore pocket from localStorage
+pocket.restoreStore()
 ```
 
 ## How it works
@@ -56,8 +61,25 @@ on two layers. The first layer is a in-memory representation of your data which 
 The second layer is localStorage and is persistent. The first layer, by default, automatically commits changes to localStorage 
 in JSON format. You can disable this behaviour at anytime on any collection and only commit data to localStorage when it suits you. 
 
-To commit a collection:
-`collection.commit()` or `pocket.commit('collectionName')`
+## API
+
+### Store
+`Store.collection(name)`:  Return collection and if it doesn't exist, create a new collection and return it
+`Store.addCollection(name)`: Add a collection to the pocket
+`Store.removeCollection(name)`: Remove a collection from the pocket
+`Store.restoreStore()`: Loads previous pocket from localStorage
+`Store.destroy()`: Destroys the pocket. Does not commit before destroying
+`Store.commit(name)`: Stores collection to localStorage based on collection name passed as argument
+
+### Collection
+`Collection.insert(document)`: 
+`Collection.remove(query)`:
+`Collection.find(query)`:
+`Collection.findOne(query)`:
+`Collection.update(query, obj)`:
+`Collection.size()`:
+`Collection.destroy()`:
+`Collection.commit()`:
 
 ## Comparators
 
@@ -74,7 +96,7 @@ When:
 | :---------------- | :-------------------------------- | :---------------------------------------------------- |
 | Equal             | `age:18` or `age:{ $eq: 18 }`     | True if the key equals a value                        |
 | Not equal         | `age:{ $neq: 18 }`                | True if key is not equal to a value                   |
-| Or                | `$or:[{ age: 18 },{ age: 19 }]`   | True is any of the conditions match                   |
+| Or                | `$or:[query, query, ...]`         | True is any of the queries are true                   |
 | Greater           | `age:{ $gt: 18 }`                 | True if the key is greater than a value               |
 | Greater or equal  | `age:{ $gte: 18 }`                | True if the key is greater than or equal to a value   |
 | Less              | `age:{ $lt: 18 }`                 | True if the key is less than a value                  |
