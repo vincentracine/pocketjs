@@ -1,5 +1,5 @@
 /**
- * Pocket.js v1.0.5
+ * Pocket.js v2.0.0
  *
  * @file A blazing fast lightweight storage library
  * @author Vincent Racine vincentracine@hotmail.co.uk
@@ -259,7 +259,7 @@ function Pocket(options){
 	 * @returns {Store}
 	 */
 	function Store(options){
-		this.version = '1.0.5';
+		this.version = '2.0.0';
 		this.collections = {};
 		this.options = Utils.merge({dbname: "pocket", driver:Pocket.Drivers.DEFAULT}, options || {});
 

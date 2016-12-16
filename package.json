@@ -1,6 +1,6 @@
 {
   "name": "pocketjs",
-  "version": "1.0.5",
+  "version": "2.0.0",
   "description": "localStorage wrapper which exposes a simple MongoDB-like syntax ",
   "main": "index.js",
   "directories": {
