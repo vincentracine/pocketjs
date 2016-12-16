@@ -1,5 +1,5 @@
 /**
- * Testing for the NursePad mobile application
+ * Testing for the Pocket.js Library
  *
  * @author Vincent Racine vr00051@surrey.ac.uk
  */
@@ -12,13 +12,13 @@ describe('app', function() {
 
 		describe('store', function(){
 			it('should create store', function(){
-				expect(Pocket.new().version).toBeDefined();
-				expect(Pocket.new().collections).toBeDefined();
-			})
+				var store = new Pocket();
+				expect(store.version).toBeDefined();
+			});
 		});
 
 		describe('collections', function(){
-			var store = Pocket.new();
+			var store = new Pocket();
 
 			it('should create collection', function(){
 				store.collection('test');
@@ -30,56 +30,62 @@ describe('app', function() {
 			});
 		});
 
-		describe('documents', function(){
-			var store = Pocket.new();
+		describe('documents', function() {
+			var store = new Pocket();
 			var collection = store.collection('test');
 
-			it('should create documents', function(){
-				collection.insert({ id:0 });
-				collection.insert({ id: 1 });
-				expect(collection.documents.length).toEqual(2);
+			it('should create a document', function(){
+				collection.insert({});
+				expect(collection.size()).toEqual(1);
 			});
 
-			it('should remove all documents', function(){
+			it('should remove a document', function(){
 				collection.remove();
-				expect(collection.length).toEqual(0);
+				expect(collection.size()).toEqual(0);
 			});
 
-			var document;
-
-			it('should create _id', function(){
-				document = collection.insert({});
+			it('should create & return document _id', function(){
+				var document = collection.insert({});
 				expect(document._id).toBeDefined();
 				expect(typeof document._id).toEqual('string');
 			});
 
-			it('should not override _id', function(){
-				document = collection.insert({ _id: 1 });
+			it('should not override _id if already exists', function(){
+				var document = collection.insert({ _id: 1 });
 				expect(document._id).toBeDefined();
 				expect(document._id).toEqual(1);
 			});
 
-			it('should preserve data', function(){
-				document = collection.insert({ name: 'Foo', surname: 'Bar' });
-				expect(document.name).toEqual('Foo');
-				expect(document.surname).toEqual('Bar');
+			it('should find documents', function(){
+				// Remove previous entries
+				collection.remove();
+				collection.insert({});
+				collection.insert({});
+				var documents = collection.find();
+				expect(documents.length).toEqual(2);
+			});
+
+			it('should find one document', function(){
+				// Remove previous entries
+				collection.remove();
+				collection.insert({});
+				collection.insert({});
+				var document = collection.findOne();
+				expect(document).toBeTruthy();
 			});
 
 			it('should partially update shallow keys', function(){
-				document = collection.insert({ name: 'Foo', surname: 'Bar' });
-				expect(document.name).toEqual('Foo');
-				expect(document.surname).toEqual('Bar');
+				collection.remove();
+				var document = collection.insert({ forename: "Foo", surname: "Bar" });
+				expect(document.forename).toEqual("Foo");
 
-				document = collection.update(document._id, { surname: 'Baz' }).findOne(document._id);
-				expect(document.surname).toEqual('Baz');
-
-				document = collection.update(document._id, { age: 18 }).findOne(document._id);
-				expect(document.age).toBeDefined();
-				expect(document.age).toEqual(18);
+				collection.update(document._id, { forename: "Biz" });
+				document = collection.findOne();
+				expect(document.forename).toEqual("Biz");
 			});
 
 			it('should partially update deep keys', function(){
-				document = collection.insert({ profile:{ name: 'Foo', surname: 'Bar', account: { active: false, username:'user1' } }});
+				var document = collection.insert({ profile:{ name: 'Foo', surname: 'Bar', account: { active: false, username:'user1' } }});
 				expect(document.profile.surname).toEqual('Bar');
 
 				document = collection.update(document._id, { profile: { surname:'Baz' }}).findOne(document._id);
@@ -100,7 +106,7 @@ describe('app', function() {
 		});
 
 		describe('queries', function(){
-			var store = Pocket.new();
+			var store = new Pocket();
 			var collection = store.collection('test');
 
 			collection.insert({ name: 'Person 1', age: 15, male: false });
@@ -181,6 +187,76 @@ describe('app', function() {
 
 		});
 
+		describe('Driver - localStorage', function(){
+			var store = new Pocket();
+			var collection = store.collection('test');
+
+			it('select default driver', function(){
+				expect(store.options.driver === window.localStorage).toEqual(true);
+			});
+
+			it('should commit empty collection', function(){
+				collection.remove();
+				collection.commit();
+				expect(window.localStorage.getItem('pocket.test')).toBeDefined();
+			});
+
+			it('should commit non-empty collection', function(){
+				window.localStorage.removeItem('pocket.test');
+				expect(window.localStorage.getItem('pocket.test')).toBeNull();
+				collection.insert({ forename: 'Foo', surname: 'Bar' });
+				collection.commit();
+				var json = window.localStorage.getItem('pocket.test');
+				expect(json).toBeDefined();
+
+				var data = JSON.parse(json);
+				expect(data.name).toEqual('test');
+				expect(data.length).toEqual(1);
+			});
+		});
+
+		describe('Driver - Web SQL', function(){
+			var store = new Pocket({
+				driver: Pocket.Drivers.WEBSQL
+			});
+			var collection = store.collection('test');
+
+			it('select default driver', function(){
+				expect(store.options.driver.toString()).toEqual("[object Database]");
+			});
+
+			it('should commit empty collection', function(done){
+				collection.remove();
+				collection.commit(function(error){
+					expect(error).toBeFalsy();
+					done();
+				});
+			});
+
+			it('should commit non-empty collection', function(done){
+				collection.insert({ forename: 'Foo', surname: 'Bar' });
+				collection.commit(function(error){
+					expect(error).toBeFalsy();
+					done();
+				});
+			});
+
+			it('should recover data', function(done){
+				collection.remove();
+				collection.insert({ forename: 'Foo', surname: 'Bar' });
+				collection.commit();
+				store.destroy();
+				store = new Pocket({
+					driver: Pocket.Drivers.WEBSQL
+				});
+				store.restore(function(error){
+					expect(error).toBeFalsy();
+					expect(Object.keys(store.collections).length).toBeGreaterThan(0);
+					expect(store.collection('test').findOne()).toBeTruthy();
+					done();
+				});
+			});
+		});
 
 	});
 });
