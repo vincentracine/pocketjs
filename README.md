@@ -55,34 +55,31 @@ pocket.restore()
 ```
 
 ## How it works
-Pocket is a wrapper for multiple storage API's such as localStorage and Web SQL. It exposes a simple API to make your life easier. Pocket works 
-on two layers. The first layer is a in-memory representation of your data which allows rapid querying and data manipulation. 
-The second layer is your persistent layer which can be any storage API. The first layer, by default, automatically commits changes to localStorage 
-in JSON format. You can disable this behaviour at anytime on any collection and only commit data to localStorage when it suits you or
-to any other storage API e.g. Web SQL. 
+PocketJS is a wrapper for multiple storage API's such as localStorage and Web SQL. It exposes a simple API to make your life easier. Each pocket has two layers. The first layer is a in-memory representation of your data which allows rapid querying and data manipulation. The second layer is your persistent layer which can be any of the supported storage APIs. The first layer, by default, will automatically commit changes to persistent storage in JSON format. You can disable this behaviour at anytime on any collection and only commit data to localStorage when it suits you or
+to any other supported storage API e.g. Web SQL. 
 
 ## API
 
 ### Store
-`Store.collection(name)`:  Return collection and if it doesn't exist, create a new collection and return it
-`Store.removeCollection(name)`: Remove a collection from the pocket
-`Store.restore()`: Loads previous pocket from the chosen database
-`Store.destroy()`: Destroys the pocket. Does not commit before destroying
-`Store.commit(name)`: Stores collection to localStorage based on collection name passed as argument
+`Store.collection(name)`:  Return collection and if it doesn't exist, create a new collection and return it\n
+`Store.removeCollection(name)`: Remove a collection from the pocket\n
+`Store.restore()`: Loads previous pocket from the chosen database\n
+`Store.destroy()`: Destroys the pocket. Does not commit before destroying\n
+`Store.commit(name)`: Stores collection to localStorage based on collection name passed as argument\n
 
 ### Collection
-`Collection.insert(document)`: 
-`Collection.remove(query)`:
-`Collection.find(query)`:
-`Collection.findOne(query)`:
-`Collection.update(query, patch)`:
-`Collection.size()`:
-`Collection.destroy()`:
-`Collection.commit()`:
+`Collection.insert(document)`:\n 
+`Collection.remove(query)`:\n
+`Collection.find(query)`:\n
+`Collection.findOne(query)`:\n
+`Collection.update(query, patch)`:\n
+`Collection.size()`:\n
+`Collection.destroy()`:\n
+`Collection.commit()`:\n
 
 ## Comparators
 
-Whenever you manipulate data within a pocket, you have the ability to specify a query to filter records and only affect
+Whenever you manipulate or retrieve data in a pocket, you have the ability to specify a query to filter the records and only affect
 specific records.
 
 Queries can be used in the following methods:
