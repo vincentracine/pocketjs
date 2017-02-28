@@ -99,6 +99,7 @@ Queries can be used in the following methods:
 | Greater or equal  | `age:{ $gte: 18 }`                | True if the key is greater than or equal to a value   |
 | Less              | `age:{ $lt: 18 }`                 | True if the key is less than a value                  |
 | Less or equal     | `age:{ $lte: 18 }`                | True if the key is less than or equal to a value      |
+| String contains   | `address:{ $contains: "London" }` | True if the key contains a substring equal to a value |
 
 ## License
 This software is provided free of charge and without restriction under the [MIT License](LICENSE)
