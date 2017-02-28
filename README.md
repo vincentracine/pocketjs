@@ -61,21 +61,22 @@ to any other supported storage API e.g. Web SQL.
 ## API
 
 ### Store
-`Store.collection(name)`:  Return collection and if it doesn't exist, create a new collection and return it\n
-`Store.removeCollection(name)`: Remove a collection from the pocket\n
-`Store.restore()`: Loads previous pocket from the chosen database\n
-`Store.destroy()`: Destroys the pocket. Does not commit before destroying\n
-`Store.commit(name)`: Stores collection to localStorage based on collection name passed as argument\n
+`Store.collection(name)`:  Return collection and if it doesn't exist, create a new collection and return it  
+`Store.removeCollection(name)`: Remove a collection from the pocket  
+`Store.restore()`: Loads previous pocket from the chosen database  
+`Store.destroy()`: Destroys the pocket. Does not commit before destroying  
+`Store.commit(name)`: Stores collection to localStorage based on collection name passed as argument  
 
 ### Collection
-`Collection.insert(document)`:\n 
-`Collection.remove(query)`:\n
-`Collection.find(query)`:\n
-`Collection.findOne(query)`:\n
-`Collection.update(query, patch)`:\n
-`Collection.size()`:\n
-`Collection.destroy()`:\n
-`Collection.commit()`:\n
+`Collection.insert(document)`:  
+`Collection.remove(query)`:  
+`Collection.find(query)`:  
+`Collection.findOne(query)`:  
+`Collection.update(query, patch)`:  
+`Collection.size()`:  
+`Collection.destroy()`:  
+`Collection.commit()`:  
+
 
 ## Comparators
 
