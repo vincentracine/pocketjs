@@ -687,3 +687,10 @@ Pocket.Drivers = {
 	'LOCAL_STORAGE': window.localStorage,
 	'WEBSQL': 'WEBSQL'
 };
+
+if(typeof exports !== 'undefined') {
+	if( typeof module !== 'undefined' && module.exports ) {
+		exports = module.exports = Pocket
+	}
+	exports.Pocket = Pocket
+}
