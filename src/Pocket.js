@@ -366,7 +366,8 @@ function Pocket(options){
 		 * @param callback
 		 */
 		restore: function(options, callback) {
-			var self = this;
+			var self = this,
+				driver = this.options.driver;
 
 			if (typeof options === 'function'){
 				callback = options;
@@ -385,6 +386,7 @@ function Pocket(options){
 							var data = JSON.parse(row),
 								collection;
 							collection = new Collection(data.name, data.options);
+							collection.options.driver = driver;
 							collection.documents = data.documents;
 							collection.length = data.documents.length;
 							this.collections[collection.name] = collection;
@@ -394,7 +396,6 @@ function Pocket(options){
 			}
 
 			if(this.options.driver.toString() === "[object Database]"){
-				var driver = this.options.driver;
 				this.options.driver.transaction(function(tx) {
 					tx.executeSql('SELECT tbl_name from sqlite_master WHERE type = "table" AND tbl_name != "__WebKitDatabaseInfoTable__"', [], function(tx, results){
 						var rows = results.rows, count = 0, length = rows.length;
