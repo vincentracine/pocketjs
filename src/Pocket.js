@@ -71,7 +71,7 @@ function Pocket(options){
 		 */
 		format: function(query){
 			if(!query) return {};
-			if(typeof query === 'string' || typeof arg === 'number') return {_id:query};
+			if(typeof query === 'string' || typeof query === 'number') return {_id:query};
 			return query;
 		},
 
@@ -282,7 +282,7 @@ function Pocket(options){
 			throw new Error('Collection requires a name');
 		this.name = name;
 		this.documents = [];
-		this.options = Utils.merge({driver:Pocket.Drivers.DEFAULT}, options || {});
+		this.options = options || {};
 		this.length = 0;
 		return this;
 	}
@@ -348,13 +348,14 @@ function Pocket(options){
 		 * Stores a collection into local storage
 		 *
 		 * @param {Collection} [name] Collection name to store into local storage
+		 * @param {Function} [callback] Async callback
 		 */
-		commit: function(name){
+		commit: function(name, callback){
 			if(!name)
 				throw new Error('Invalid arguments. Expected collection name');
 			var collection = this.collections[name];
 			if(collection){
-				collection.commit();
+				collection.commit(callback);
 			}
 			return this;
 		},
@@ -393,35 +394,41 @@ function Pocket(options){
 			}
 
 			if(this.options.driver.toString() === "[object Database]"){
+				var driver = this.options.driver;
 				this.options.driver.transaction(function(tx) {
 					tx.executeSql('SELECT tbl_name from sqlite_master WHERE type = "table" AND tbl_name != "__WebKitDatabaseInfoTable__"', [], function(tx, results){
 						var rows = results.rows, count = 0, length = rows.length;
-						for(var row in rows){
-							if(rows.hasOwnProperty(row)){
-								tx.executeSql('SELECT json from ' + rows[row].tbl_name + ' LIMIT 1', [], function(tx, results){
-									var rows = results.rows;
-									for(var row in rows){
-										if(rows.hasOwnProperty(row)){
-											var json = rows[row].json;
-											if(typeof json === 'string'){
-												var data = JSON.parse(json),
-													collection;
-												collection = new Collection(data.name, data.options);
-												collection.documents = data.documents;
-												collection.length = data.documents.length;
-												self.collections[collection.name] = collection;
-											}
 
-											// Increment count or exit
-											if(count == length - 1){
-												callback(null);
-											}else{
-												count++;
-											}
-										}
+						// No tables
+						if(length == 0){
+							return callback(null);
+						}
+
+						// Has tables
+						for (var i = 0, len = rows.length; i < len; i++) {
+							tx.executeSql('SELECT json from ' + rows.item(i).tbl_name + ' LIMIT 1', [], function(tx, results){
+								var rows = results.rows;
+
+								for (var i = 0, len = rows.length; i < len; i++) {
+									var json = rows.item(i).json;
+									if(typeof json === 'string'){
+										var data = JSON.parse(json),
+											collection;
+										collection = new Collection(data.name, data.options);
+										collection.options.driver = driver;
+										collection.documents = data.documents;
+										collection.length = data.documents.length;
+										self.collections[collection.name] = collection;
 									}
-								});
-							}
+
+									// Increment count or exit
+									if(count == length - 1){
+										callback(null);
+									}else{
+										count++;
+									}
+								}
+							});
 						}
 					}, function(tx, error){
 						callback(error);
@@ -453,15 +460,16 @@ function Pocket(options){
 		 * Examples.insert({ forename: 'Foo', surname: 'Bar' });
 		 *
 		 * @param {object} doc Data to be inserted into the collection
+		 * @param {Function} [callback] Async callback
 		 * @returns {Document}
 		 */
-		insert: function(doc){
+		insert: function(doc, callback){
 			var document = new Document(doc);
 			this.documents.push(document);
 			this.length++;
 
 			if(this.options.autoCommit){
-				this.commit();
+				this.commit(callback);
 			}
 
 			return document;
@@ -548,9 +556,10 @@ function Pocket(options){
 		 *
 		 * @param {object|number|string} [query] Query which tests for valid documents
 		 * @param {object} doc Data to be inserted into the collection
+		 * @param {Function} [callback] Async callback
 		 * @returns {Collection}
 		 */
-		update: function(query, doc){
+		update: function(query, doc, callback){
 			var documents = this.find(Query.format(query));
 
 			// Iterate through query results and update
@@ -566,7 +575,7 @@ function Pocket(options){
 			}, this);
 
 			if(this.options.autoCommit){
-				this.commit();
+				this.commit(callback);
 			}
 
 			// Return collection
@@ -591,9 +600,10 @@ function Pocket(options){
 		 * console.log(Examples.length) // 0
 		 *
 		 * @param {object|number|string} [query] Query which tests for valid documents
+		 * @param {Function} [callback] Async callback
 		 * @return {Collection}
 		 */
-		remove: function(query){
+		remove: function(query, callback){
 			var documents = this.find(Query.format(query));
 
 			// Iterate through query results
@@ -611,7 +621,7 @@ function Pocket(options){
 			}, this);
 
 			if(this.options.autoCommit){
-				this.commit();
+				this.commit(callback);
 			}
 
 			// Return collection
@@ -625,7 +635,13 @@ function Pocket(options){
 		 */
 		commit: function(callback){
 			var name = this.name,
-				json = JSON.stringify(this);
+				collection = JSON.parse(JSON.stringify(this));
+
+			// Convert storage
+			delete collection.options.driver;
+
+			// Convert to JSON
+			var json = JSON.stringify(collection);
 
 			callback = callback || function(){};
 
@@ -637,8 +653,8 @@ function Pocket(options){
 				this.options.driver.transaction(function(tx) {
 					tx.executeSql('DROP TABLE IF EXISTS ' + name);
 					tx.executeSql('CREATE TABLE ' + name + ' (json)');
-					tx.executeSql('INSERT INTO ' + name + ' (json) VALUES (?)', [json], function(){
-						callback(null)
+					tx.executeSql('INSERT INTO ' + name + ' (json) VALUES (?)', [json], function(tx, result){
+						callback(null, tx, result);
 					}, function(tx, error){
 						callback(error);
 					});
