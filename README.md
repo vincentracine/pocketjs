@@ -1,7 +1,7 @@
 # PocketJS
-Pocket is a high performance storage library. It provides an API which resembles MongoDB's proven syntax and provides a 
-powerful lightweight abstraction from the complexity of storage. Pocket support multiple methods of storage including
-localStorage and Web SQL.
+Pocket is a high performance web storage library. It provides an API which resembles MongoDB's proven syntax and provides a 
+powerful lightweight abstraction from the complexity of web storage. Pocket supports multiple methods of storage including
+localStorage and Web SQL. Currently working on offering IndexDB support.
 
 ```js
 // Create a new Pocket

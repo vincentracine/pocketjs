@@ -1,5 +1,5 @@
 /**
- * Pocket.js v2.0.0
+ * Pocket.js v2.0.5
  *
  * @file A blazing fast lightweight storage library
  * @author Vincent Racine vincentracine@hotmail.co.uk
