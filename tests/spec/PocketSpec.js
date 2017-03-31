@@ -84,24 +84,18 @@ describe('app', function() {
 				expect(document.forename).toEqual("Biz");
 			});
 
-			it('should partially update deep keys', function(){
-				var document = collection.insert({ profile:{ name: 'Foo', surname: 'Bar', account: { active: false, username:'user1' } }});
-				expect(document.profile.surname).toEqual('Bar');
+			it('should handle deep keys', function(){
+				collection.insert({ profile:{ forename: 'Vince', surname: 'Racine', settings:[{ key:"read", active: true },{ key:"write", active: false }] }, tags: ["Storage", "JavaScript", "Library", "PocketJS"]});
+				var result = collection.findOne({ "profile.forename": "Vince" });
+				expect(result).not.toBeNull();
 
-				document = collection.update(document._id, { profile: { surname:'Baz' }}).findOne(document._id);
-				expect(document.profile.surname).toEqual('Baz');
+				window.collection = collection;
 
-				document = collection.update(document._id, { profile:{ account:{ username:'user2' } }}).findOne(document._id);
-				expect(document.profile.account.username).toEqual('user2');
-				expect(document.profile.account.active).toEqual(false);
+				result = collection.findOne({ "tags.0": "Storage" });
+				expect(result).not.toBeNull();
 
-				document = collection.update(document._id, { profile:{ account:{ active:true } }}).findOne(document._id);
-				expect(document.profile.account.active).toEqual(true);
-
-				document = collection.update(document._id, { profile:{ account:[{ username:'user1', active:true }] }}).findOne(document._id);
-				expect(document.profile.account.length).toEqual(1);
-				expect(document.profile.account[0].username).toEqual('user1');
-				expect(document.profile.account[0].active).toEqual(true);
+				result = collection.findOne({ "profile.settings.1.active": false });
+				expect(result).not.toBeNull();
 			});
 		});
 
@@ -114,7 +108,7 @@ describe('app', function() {
 			collection.insert({ name: 'Person 3', age: 21, male: true });
 			collection.insert({ name: 'Person 4', age: 12, male: false, special: true });
 			collection.insert({ name: 'Person 5', age: 15, male: false });
-			collection.insert({ name: 'Person 6', age: 34, male: false });
+			collection.insert({ name: 'Person 6', age: 34, male: false, tags:["Test", "for", "array", "operators"] });
 
 			it('should test booleans', function(){
 				expect(collection.find({ male:true }).length).toEqual(2);
@@ -183,6 +177,19 @@ describe('app', function() {
 			it('nested comparators in $or', function(){
 				expect(collection.find({ $or: [{ name:{ $eq:'Person 1' }},{ name:{ $eq:'Person 2' }}] }).length).toEqual(2);
 				expect(collection.find({ $or: [{ age:{ $gt:30 }},{ age:{ $lte:15 }}] }).length).toEqual(4);
+			});
+
+			it('$in', function(){
+				expect(collection.find({ age: { $in:[12, 18] } }).length).toEqual(2);
+			});
+
+			it('$nin', function(){
+				expect(collection.find({ age: { $nin:[12, 18] } }).length).toEqual(4);
+			});
+
+			it('$type', function(){
+				expect(collection.find({ age: { $type: "number" } }).length).toEqual(6);
+				expect(collection.find({ tags: { $type: "array" } }).length).toEqual(1);
 			});
 
 		});

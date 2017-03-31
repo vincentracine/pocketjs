@@ -57,6 +57,19 @@ function Pocket(options){
 		},
 
 		/**
+		 * Resolve object field value passed on string path.
+		 * Thank you http://stackoverflow.com/a/22129960/5678694!
+		 * @param path
+		 * @param object
+		 * @returns {*}
+		 */
+		resolve: function(path, object){
+			return path.split('.').reduce(function(prev, curr) {
+				return prev ? prev[curr] : undefined
+			}, object || self)
+		},
+
+		/**
 		 * Generates an id with a extremely low chance of collision
 		 * @returns {string} ID
 		 */
@@ -64,6 +77,7 @@ function Pocket(options){
 			return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {var r = Math.random()*16|0,v=c=='x'?r:r&0x3|0x8;return v.toString(16);});
 		}
 	};
+
 	var Query = {
 		/**
 		 * Formats a DB query
@@ -89,20 +103,25 @@ function Pocket(options){
 
 			for (var i = 0; i < keys.length; i++) {
 				condition = { name: keys[i], value: query[keys[i]] };
-				if(!document.hasOwnProperty(condition.name) && typeof Query.Operators[condition.name] !== 'function'){
+
+				// Actual field value
+				var value = Utils.resolve(condition.name, document);
+
+				if(typeof value === 'undefined' && typeof Query.Operators[condition.name] !== 'function') {
 					return false;
 				}
+
 				if(typeof Query.Operators[condition.name] === 'function'){
 					return Query.Operators[condition.name](document, condition.value)
 				}else if(typeof condition.value === 'object'){
 					operator = Object.keys(condition.value)[0];
 					if(typeof Query.Operators[operator] === 'function'){
-						return Query.Operators[operator](document[condition.name], condition.value[operator])
+						return Query.Operators[operator](value, condition.value[operator])
 					}else{
 						throw new Error("Unrecognised operator '" + operator + "'");
 					}
 				}else{
-					return Query.Operators.$eq(document[condition.name], condition.value);
+					return Query.Operators.$eq(value, condition.value);
 				}
 			}
 
@@ -246,6 +265,66 @@ function Pocket(options){
 			 */
 			'$contains': function(a,b){
 				return a.indexOf(b) > -1;
+			},
+
+			/**
+			 * Check whether a key exists within an array
+			 *
+			 * @example
+			 * Examples.find({ age:{ $in: [16,17,18] } });
+			 *
+			 * @param a
+			 * @param b
+			 * @returns {boolean}
+			 */
+			'$in': function(a,b){
+				// Throw an error if not passed an array of possibilities
+				if(!Utils.isArray(b)){
+					throw new Error('$in Operator expects an Array')
+				}
+				return b.indexOf(a) > -1;
+			},
+
+			/**
+			 * Check whether a key does not exist within an array
+			 *
+			 * @example
+			 * Examples.find({ age:{ $nin: [16,17,18] } });
+			 *
+			 * @param a
+			 * @param b
+			 * @returns {boolean}
+			 */
+			'$nin': function(a,b){
+				// Throw an error if not passed an array of possibilities
+				if(!Utils.isArray(b)){
+					throw new Error('$nin Operator expects an Array')
+				}
+				return b.indexOf(a) === -1;
+			},
+
+			/**
+			 * Check whether key is data type. Uses standard javascript object types.
+			 *
+			 * @example
+			 * Examples.find({ age:{ $type: "number" } });
+			 *
+			 * @param a
+			 * @param b
+			 */
+			'$type': function(a,b){
+				// Null
+				if(b === "null"){
+					return a === null;
+				}
+
+				// Arrays
+				if(b === "array"){
+					return Utils.isArray(a);
+				}
+
+				// All other supported types
+				return typeof a === b;
 			}
 		}
 	};
@@ -261,7 +340,7 @@ function Pocket(options){
 	function Store(options){
 		this.version = '2.0.0';
 		this.collections = {};
-		this.options = Utils.merge({dbname: "pocket", driver:Pocket.Drivers.DEFAULT}, options || {});
+		this.options = Utils.merge({autoCommit: true, dbname: "pocket", driver:Pocket.Drivers.DEFAULT}, options || {});
 
 		if(!this.options.driver)
 			throw new Error('Storage driver was not found');

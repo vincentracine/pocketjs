@@ -54,11 +54,26 @@ var pocket = new Pocket()
 pocket.restore()
 ```
 
+Create a new pocket using auto commit.
+```js
+var pocket = new Pocket({ autoCommit: true })
+```
+
+Create a new pocket using WebSQL.
+```js
+var pocket = new Pocket({ dbname: "pocket.test", driver: Pocket.Drivers.WEBSQL })
+```
+
 ## How it works
-PocketJS is a wrapper for multiple storage API's such as localStorage and Web SQL. It exposes a simple API to make your life easier. Each pocket has two layers. The first layer is a in-memory representation of your data which allows rapid querying and data manipulation. The second layer is your persistent layer which can be any of the supported storage APIs. The first layer, by default, will automatically commit changes to persistent storage in JSON format. You can disable this behaviour at anytime on any collection and only commit data to localStorage when it suits you or
-to any other supported storage API e.g. Web SQL. 
+PocketJS is a wrapper for multiple storage API's such as localStorage and Web SQL. It exposes a simple API to make your 
+life easier. Each pocket has two layers. The first layer is a in-memory representation of your data which allows rapid 
+querying and data manipulation. The second layer is your persistent layer which can be any of the supported storage APIs. 
+The first layer, by default, will automatically commit changes to persistent storage in JSON format. You can disable 
+this behaviour at anytime on any collection and only commit data to localStorage when it suits you or to any other 
+supported storage API e.g. Web SQL. 
 
 ## API
+For usage, please see the [PocketSpec.js](tests/spec/PocketSpec.js) test file.
 
 ### Store
 `Store.collection(name)`:  Return collection and if it doesn't exist, create a new collection and return it  
@@ -68,14 +83,14 @@ to any other supported storage API e.g. Web SQL.
 `Store.commit(name)`: Stores collection to localStorage based on collection name passed as argument  
 
 ### Collection
-`Collection.insert(document)`:  
-`Collection.remove(query)`:  
-`Collection.find(query)`:  
-`Collection.findOne(query)`:  
-`Collection.update(query, patch)`:  
-`Collection.size()`:  
-`Collection.destroy()`:  
-`Collection.commit()`:  
+`Collection.insert(document)`  
+`Collection.remove(query)`  
+`Collection.find(query)`  
+`Collection.findOne(query)`  
+`Collection.update(query, patch)`  
+`Collection.size()`  
+`Collection.destroy()`  
+`Collection.commit()`  
 
 
 ## Comparators
@@ -100,6 +115,17 @@ Queries can be used in the following methods:
 | Less              | `age:{ $lt: 18 }`                 | True if the key is less than a value                  |
 | Less or equal     | `age:{ $lte: 18 }`                | True if the key is less than or equal to a value      |
 | String contains   | `address:{ $contains: "London" }` | True if the key contains a substring equal to a value |
+| In                | `age:{ $in: [16,17,18] }`         | True if the key exists within the array               |
+| Not in            | `age:{ $nin: [16,17,18] }`        | True if the key does not exist within the array       |
+| Type              | `age:{ $type: "number" }`         | True if the key data type equals specified data type  |
+
+### Accessing nested keys
+Just like in MongoDB, you will be able to access nested object properties and array indexes using a string. Array indexes
+can be accessed by simply putting the index as demonstrated in the example below.
+ 
+```js
+Collection.update({ _id: 1234  }, { "profile.settings.3.active": true })
+```
 
 ## License
 This software is provided free of charge and without restriction under the [MIT License](LICENSE)
