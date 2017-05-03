@@ -14,6 +14,9 @@ var staffs = pocket.collection('staff')
 staffs.insert({ name:'Foo Bar', age:18 })
 staffs.insert({ name:'Baz Foo', age:34 })
 
+// Add an array of items
+staffs.insert([{ name:'Pete Johnson', age:44 }, { name: "Joe Bloggs", age: 19 }])
+
 // Get all items from a collection
 staffs.find().length //2
 
@@ -54,9 +57,9 @@ var pocket = new Pocket()
 pocket.restore()
 ```
 
-Create a new pocket using auto commit.
+Create a new pocket without auto commit.
 ```js
-var pocket = new Pocket({ autoCommit: true })
+var pocket = new Pocket({ autoCommit: false })
 ```
 
 Create a new pocket using WebSQL.
@@ -73,7 +76,7 @@ this behaviour at anytime on any collection and only commit data to localStorage
 supported storage API e.g. Web SQL. 
 
 ## API
-For usage, please see the [PocketSpec.js](tests/spec/PocketSpec.js) test file.
+For usage examples, please see the [PocketSpec.js](tests/spec/PocketSpec.js) test file.
 
 ### Store
 `Store.collection(name)`:  Return collection and if it doesn't exist, create a new collection and return it  
@@ -99,10 +102,10 @@ Whenever you manipulate or retrieve data in a pocket, you have the ability to sp
 specific records.
 
 Queries can be used in the following methods:
-* Finding one: `collection.findOne(query)`
-* Finding: `collection.find(query)`
-* Updating: `collection.update(query, data)`
-* Removing: `collection.remove(query)`
+* Finding one: `Collection.findOne(query)`
+* Finding: `Collection.find(query)`
+* Updating: `Collection.update(query, data)`
+* Removing: `Collection.remove(query)`
 
 ### Table of operations
 | Operation         | Syntax                            | Description                                           |

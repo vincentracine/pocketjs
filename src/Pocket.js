@@ -1,5 +1,5 @@
 /**
- * Pocket.js v2.0.5
+ * Pocket.js v2.0.6
  *
  * @file A blazing fast lightweight storage library
  * @author Vincent Racine vincentracine@hotmail.co.uk
@@ -338,7 +338,7 @@ function Pocket(options){
 	 * @returns {Store}
 	 */
 	function Store(options){
-		this.version = '2.0.0';
+		this.version = '2.0.6';
 		this.collections = {};
 		this.options = Utils.merge({autoCommit: true, dbname: "pocket", driver:Pocket.Drivers.DEFAULT}, options || {});
 
@@ -524,11 +524,14 @@ function Pocket(options){
 		 */
 		destroy: function(){
 			for (var collection in this.collections) {
-				if(collection instanceof  Collection){
-					collection.destroy();
+				if(this.collections.hasOwnProperty(collection)){
+					if(collection instanceof  Collection){
+						collection.destroy();
+						delete this.collections[collection];
+					}
 				}
 			}
-			this.collections = null;
+			this.collections = [];
 		}
 	};
 	Collection.prototype = {
@@ -538,12 +541,19 @@ function Pocket(options){
 		 * @example
 		 * var Examples = Store.addCollection('example');
 		 * Examples.insert({ forename: 'Foo', surname: 'Bar' });
+		 * Examples.insert([{ forename: 'Pete', surname: 'Johnson' }, { forename: 'Joe', surname: 'Bloggs' }])
 		 *
-		 * @param {object} doc Data to be inserted into the collection
+		 * @param {object|Array} doc Data to be inserted into the collection. Can also be array of data.
 		 * @param {Function} [callback] Async callback
-		 * @returns {Document}
+		 * @returns {Document|Array}
 		 */
 		insert: function(doc, callback){
+			if(Utils.isArray(doc)){
+				return doc.map(function(document){
+					return this.insert(document);
+				}, this);
+			}
+
 			var document = new Document(doc);
 			this.documents.push(document);
 			this.length++;
@@ -615,7 +625,7 @@ function Pocket(options){
 		 * var result = Examples.findOne({ forename: 'Foo', surname: 'Bar' });
 		 * console.log(result) // { _id: '1', forename: 'Foo', surname: 'Bar' }
 		 *
-		 * @param {object|number|string} query Query which tests for valid documents
+		 * @param {object|number|string} [query] Query which tests for valid documents
 		 * @return {Collection}
 		 */
 		findOne: function(query){
@@ -753,9 +763,15 @@ function Pocket(options){
 		},
 
 		/**
-		 * Cleans up memory
+		 * Delete collection contents
 		 */
 		destroy: function(){
+			// Force auto commit
+			if(!this.options.autoCommit)
+				this.options.autoCommit = true;
+
+			// Remove all documents in collection
+			this.remove();
 			this.documents = this.options = this.name = null;
 		}
 	};

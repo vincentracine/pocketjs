@@ -39,6 +39,12 @@ describe('app', function() {
 				expect(collection.size()).toEqual(1);
 			});
 
+			it('should create multiple documents', function(){
+				var docs = collection.insert([{}, {}, {}, {}, {}]);
+				expect(docs.length).toEqual(5);
+				expect(collection.size()).toEqual(6);
+			});
+
 			it('should remove a document', function(){
 				collection.remove();
 				expect(collection.size()).toEqual(0);
