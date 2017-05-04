@@ -51,7 +51,11 @@ In your `index.html` file, include the Pocket.js file (ES5).
 
 If using ES6 (Browserify), do this:
 ```js
+// Run in terminal
 npm install pocketjs
+
+// Include it in JS file
+const Pocket = require('pocketjs')
 ```
 
 Create a new pocket.
