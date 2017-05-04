@@ -44,9 +44,14 @@ pocket.restore()
 
 ## Installation
 
-In your `index.html` file, include the Pocket.js file.
+In your `index.html` file, include the Pocket.js file (ES5).
 ```html
 <script type="text/javascript" src="path/to/Pocket.js"></script>
+```
+
+If using ES6 (Browserify), do this:
+```js
+npm install pocketjs
 ```
 
 Create a new pocket.
