@@ -15,14 +15,17 @@
   },
   "keywords": [
     "localStorage",
-    "javascript",
+    "Web Storage",
     "browser",
-    "offline",
+    "local",
     "storage",
+    "database",
     "mongo",
     "websql",
     "mongo",
-    "wrapper"
+    "mongodb",
+    "wrapper",
+    "lighweight"
   ],
   "author": "Vincent Racine",
   "license": "MIT",
