@@ -62,7 +62,7 @@ Create a new pocket.
 ```js
 var pocket = new Pocket()
 
-// Restore pocket from localStorage
+// Restore pocket from storage
 pocket.restore()
 ```
 
@@ -73,7 +73,12 @@ var pocket = new Pocket({ autoCommit: false })
 
 Create a new pocket using WebSQL.
 ```js
-var pocket = new Pocket({ dbname: "pocket.test", driver: Pocket.Drivers.WEBSQL })
+var pocket = new Pocket({ driver: Pocket.Drivers.WEBSQL })
+```
+
+Create a new pocket using specific database name.
+```js
+var pocket = new Pocket({ dbname: "MyCoolApp" })
 ```
 
 ## How it works
@@ -132,7 +137,7 @@ Queries can be used in the following methods:
 | Type              | `age:{ $type: "number" }`         | True if the key data type equals specified data type  |
 
 ### Accessing nested keys
-Just like in MongoDB, you will be able to access nested object properties and array indexes using a string. Array indexes
+Just like MongoDB, you are able to access nested object properties and array indexes using a string. Array indexes
 can be accessed by simply putting the index as demonstrated in the example below.
  
 ```js

@@ -19,7 +19,10 @@
     "browser",
     "offline",
     "storage",
-    "mongo"
+    "mongo",
+    "websql",
+    "mongo",
+    "wrapper"
   ],
   "author": "Vincent Racine",
   "license": "MIT",

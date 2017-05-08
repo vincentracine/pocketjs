@@ -548,15 +548,20 @@ function Pocket(options){
 		 * @returns {Document|Array}
 		 */
 		insert: function(doc, callback){
+			var document;
+
 			if(Utils.isArray(doc)){
-				return doc.map(function(document){
-					return this.insert(document);
+				document = doc.map(function(document){
+					document = new Document(document);
+					this.documents.push(document);
+					return document;
 				}, this);
+			}else{
+				document = new Document(doc);
+				this.documents.push(document);
 			}
 
-			var document = new Document(doc);
-			this.documents.push(document);
-			this.length++;
+			this.length = this.documents.length;
 
 			if(this.options.autoCommit){
 				this.commit(callback);
