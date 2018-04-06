@@ -455,12 +455,14 @@ function Pocket(options){
 
 			callback = callback || function(){};
 
-			if(this.options.driver === Pocket.Drivers.DEFAULT){
-				var len = localStorage.length;
+			if(this.options.driver === Pocket.Drivers.DEFAULT ||
+				this.options.driver === Pocket.Drivers.SESSION_STORAGE){
+				var storage = this.options.driver;
+				var len = storage.length;
 				for(; len--;){
-					var key = localStorage.key(len);
+					var key = storage.key(len);
 					if(key.indexOf(this.options.dbname) == 0){
-						var row = localStorage.getItem(key);
+						var row = storage.getItem(key);
 						if(typeof row === 'string'){
 							var data = JSON.parse(row),
 								collection;
@@ -740,8 +742,9 @@ function Pocket(options){
 
 			callback = callback || function(){};
 
-			if(this.options.driver === Pocket.Drivers.DEFAULT){
-				window.localStorage.setItem(this.options.dbname.concat("." + this.name), json);
+			if(this.options.driver === Pocket.Drivers.DEFAULT ||
+				this.options.driver === Pocket.Drivers.SESSION_STORAGE){
+				this.options.driver.setItem(this.options.dbname.concat("." + this.name), json);
 			}
 
 			if(this.options.driver.toString() === "[object Database]"){
@@ -786,6 +789,7 @@ function Pocket(options){
 Pocket.Drivers = {
 	'DEFAULT': window.localStorage,
 	'LOCAL_STORAGE': window.localStorage,
+	'SESSION_STORAGE': window.sessionStorage,
 	'WEBSQL': 'WEBSQL'
 };
 
