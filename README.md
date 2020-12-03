@@ -1,3 +1,6 @@
+## Update Dec 2020 ##
+This library is still being **actively** used by myself and others. I have not needed to make any bug fixes or changes as of yet. I've been using this library across countless production builds for both personal products (https://www.automify.co.uk/ and https://www.statusapp.io/) and companies I've worked for.
+
 # PocketJS
 Pocket is a high performance web storage library. It provides an API which resembles MongoDB's proven syntax and provides a 
 powerful lightweight abstraction from the complexity of web storage. Pocket supports multiple methods of storage including
