@@ -340,7 +340,7 @@ function Pocket(options){
 	function Store(options){
 		this.version = '2.2.0';
 		this.collections = {};
-		this.options = Utils.merge({autoCommit: true, dbname: "pocket", driver:Pocket.Drivers.DEFAULT}, options || {});
+		this.options = Utils.merge({autoCommit: true, dbname: "pocket", driver: Pocket.Drivers.DEFAULT}, options || {});
 
 		if(!this.options.driver)
 			throw new Error('Storage driver was not found');
@@ -350,6 +350,7 @@ function Pocket(options){
 			this.options.driver = openDatabase(this.options.dbname, '1.0', 'Pocket.js datastore', 10 * 1024 * 1024);
 		}
 	}
+
 	/**
 	 * Collection Object
 	 * @param name Collection name
@@ -365,6 +366,7 @@ function Pocket(options){
 		this.length = 0;
 		return this;
 	}
+
 	/**
 	 * Document Object
 	 * @param {object} object Document data
